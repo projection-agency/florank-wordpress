@@ -4,7 +4,7 @@ Tags: seo, ai, content, schema, indexnow
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -111,6 +111,9 @@ The settings page uses the fonts Geist (Vercel), Wix Madefor Text (Wix) and Anon
 
 == Changelog ==
 
+= 2.1.2 =
+* Plugin URI now points to the plugin's source repository, separate from the author URI.
+
 = 2.1.1 =
 * Prepared for the WordPress.org plugin directory: plain-language description, installation in three steps, FAQ, screenshots, a more detailed External services section.
 * No code changes: the REST API, the key and the connection code work as in 2.1.0.
@@ -149,6 +152,9 @@ The settings page uses the fonts Geist (Vercel), Wix Madefor Text (Wix) and Anon
 * API key, posts CRUD, Yoast / Rank Math meta, featured image sideload.
 
 == Upgrade Notice ==
+
+= 2.1.2 =
+Plugin header update only. No changes to how the plugin works.
 
 = 2.1.1 =
 Description and documentation update. No changes to how the plugin works.

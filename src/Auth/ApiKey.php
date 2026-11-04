@@ -47,6 +47,24 @@ class ApiKey {
 	}
 
 	/**
+	 * Revokes the active key: requests with it are rejected from now on.
+	 */
+	public function revoke() {
+		update_option( self::OPTION_HASH, '' );
+		update_option( self::OPTION_HINT, '' );
+		delete_transient( self::TRANSIENT_NEW );
+	}
+
+	/**
+	 * Whether a key is active.
+	 *
+	 * @return bool
+	 */
+	public function exists() {
+		return '' !== (string) get_option( self::OPTION_HASH, '' );
+	}
+
+	/**
 	 * Short visible prefix of a key, e.g. "fl_ab12…".
 	 *
 	 * @param string $plain Plain key.

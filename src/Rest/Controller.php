@@ -8,6 +8,7 @@
 namespace Florank\Rest;
 
 use Florank\Auth\ApiKey;
+use Florank\Auth\RunAsUser;
 use Florank\Posts\PostService;
 use Florank\Seo\SeoBridge;
 use WP_Error;
@@ -32,6 +33,13 @@ class Controller {
 	private $api_key;
 
 	/**
+	 * User the requests run as.
+	 *
+	 * @var RunAsUser
+	 */
+	private $run_as;
+
+	/**
 	 * Post operations.
 	 *
 	 * @var PostService
@@ -49,11 +57,13 @@ class Controller {
 	 * Constructor.
 	 *
 	 * @param ApiKey      $api_key API key.
+	 * @param RunAsUser   $run_as  User the requests run as.
 	 * @param PostService $posts   Post operations.
 	 * @param SeoBridge   $seo     SEO plugin bridge.
 	 */
-	public function __construct( ApiKey $api_key, PostService $posts, SeoBridge $seo ) {
+	public function __construct( ApiKey $api_key, RunAsUser $run_as, PostService $posts, SeoBridge $seo ) {
 		$this->api_key = $api_key;
+		$this->run_as  = $run_as;
 		$this->posts   = $posts;
 		$this->seo     = $seo;
 	}
@@ -122,7 +132,8 @@ class Controller {
 
 	/**
 	 * Permission callback for every route: valid Florank API key in
-	 * "Authorization: Bearer" or "X-Florank-Key".
+	 * "Authorization: Bearer" or "X-Florank-Key", then the request runs as
+	 * the user linked to the key (403 if that user is gone or lacks rights).
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return true|WP_Error
@@ -132,6 +143,17 @@ class Controller {
 		if ( ! $this->api_key->verify( $key ) ) {
 			return new WP_Error( 'florank_unauthorized', __( 'Invalid Florank API key', 'florank' ), array( 'status' => 401 ) );
 		}
+		$this->run_as->migrate_legacy( true );
+		$user = $this->run_as->resolve();
+		if ( is_wp_error( $user ) ) {
+			return $user;
+		}
+		wp_set_current_user( $user->ID );
+		if ( 0 === $this->run_as->last_request() ) {
+			// The key reached Florank: stop showing it on the settings page.
+			delete_transient( ApiKey::TRANSIENT_NEW );
+		}
+		$this->run_as->touch_last_request();
 		return true;
 	}
 

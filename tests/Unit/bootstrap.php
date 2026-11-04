@@ -14,10 +14,94 @@ require_once dirname( __DIR__, 2 ) . '/vendor/autoload.php';
 
 $GLOBALS['florank_test_options']    = array();
 $GLOBALS['florank_test_transients'] = array();
+$GLOBALS['florank_test_users']      = array();
+$GLOBALS['florank_test_filters']    = array();
 
 function florank_test_reset() {
 	$GLOBALS['florank_test_options']    = array();
 	$GLOBALS['florank_test_transients'] = array();
+	$GLOBALS['florank_test_users']      = array();
+	$GLOBALS['florank_test_filters']    = array();
+}
+
+require_once __DIR__ . '/stubs/WP_User.php';
+require_once __DIR__ . '/stubs/WP_Error.php';
+
+function is_wp_error( $thing ) {
+	return $thing instanceof WP_Error;
+}
+
+function florank_test_add_user( $id, $login, $roles, $caps ) {
+	$GLOBALS['florank_test_users'][ $id ] = new WP_User( $id, $login, $roles, $caps );
+}
+
+function get_userdata( $id ) {
+	return $GLOBALS['florank_test_users'][ (int) $id ] ?? false;
+}
+
+function user_can( $user, $cap ) {
+	return $user instanceof WP_User && in_array( $cap, $user->caps, true );
+}
+
+function get_users( $args = array() ) {
+	$users = array_values( $GLOBALS['florank_test_users'] );
+	if ( isset( $args['role'] ) ) {
+		$users = array_values(
+			array_filter(
+				$users,
+				static function ( $u ) use ( $args ) {
+					return in_array( $args['role'], $u->roles, true );
+				}
+			)
+		);
+	}
+	usort(
+		$users,
+		static function ( $a, $b ) {
+			return $a->ID <=> $b->ID;
+		}
+	);
+	if ( isset( $args['number'] ) ) {
+		$users = array_slice( $users, 0, $args['number'] );
+	}
+	if ( isset( $args['fields'] ) && 'ID' === $args['fields'] ) {
+		return array_map(
+			static function ( $u ) {
+				return (string) $u->ID;
+			},
+			$users
+		);
+	}
+	return $users;
+}
+
+function add_filter( $hook, $callback ) {
+	$GLOBALS['florank_test_filters'][ $hook ][] = $callback;
+}
+
+function apply_filters( $hook, $value, ...$args ) {
+	foreach ( $GLOBALS['florank_test_filters'][ $hook ] ?? array() as $callback ) {
+		$value = $callback( $value, ...$args );
+	}
+	return $value;
+}
+
+function __( $text, $domain = 'default' ) {
+	return $text;
+}
+
+function wp_parse_url( $url, $component = -1 ) {
+	return parse_url( $url, $component );
+}
+
+function delete_option( $name ) {
+	unset( $GLOBALS['florank_test_options'][ $name ] );
+	return true;
+}
+
+function delete_transient( $name ) {
+	unset( $GLOBALS['florank_test_transients'][ $name ] );
+	return true;
 }
 
 function get_option( $name, $default_value = false ) {

@@ -14,8 +14,13 @@ function florank_uninstall_site() {
 	delete_option( 'florank_api_key_hash' );
 	delete_option( 'florank_api_key_hint' );
 	delete_option( 'florank_indexnow_key' );
+	delete_option( 'florank_run_as_user' );
+	delete_option( 'florank_last_request' );
 	delete_transient( 'florank_new_api_key' );
 	delete_post_meta_by_key( '_florank_schema_json_ld' );
+	delete_post_meta_by_key( '_florank_managed' );
+	delete_post_meta_by_key( '_florank_source_url' );
+	delete_post_meta_by_key( '_florank_source_hash' );
 }
 
 if ( is_multisite() ) {

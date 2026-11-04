@@ -84,4 +84,16 @@ class ApiKeyTest extends TestCase {
 			'empty bearer'            => array( 'Bearer ', null, '' ),
 		);
 	}
+
+	public function test_revoke_disables_the_key() {
+		$api_key = new ApiKey();
+		$plain   = $api_key->generate();
+		$this->assertTrue( $api_key->exists() );
+
+		$api_key->revoke();
+		$this->assertFalse( $api_key->exists() );
+		$this->assertFalse( $api_key->verify( $plain ) );
+		$this->assertSame( '', $api_key->hint() );
+		$this->assertSame( '', $api_key->pending_plain_key() );
+	}
 }

@@ -3,7 +3,7 @@
  * Plugin Name:       Florank
  * Plugin URI:        https://florank.ai
  * Description:       Connect this WordPress site to Florank to publish articles and sync SEO fields.
- * Version:           2.0.0
+ * Version:           2.1.0
  * Requires at least: 6.0
  * Requires PHP:      8.0
  * Author:            Florank
@@ -18,7 +18,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'FLORANK_VERSION', '2.0.0' );
+define( 'FLORANK_VERSION', '2.1.0' );
 define( 'FLORANK_PLUGIN_FILE', __FILE__ );
 define( 'FLORANK_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 

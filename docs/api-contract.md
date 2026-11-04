@@ -2,7 +2,8 @@
 
 Source of truth on the backend side: `projection-agency/audit-back`,
 `src/modules/publishing/adapters/wordpress.adapter.ts` (+ `wordpress-media.util.ts`).
-This document describes the contract as of plugin **2.0.0** — it is identical to **1.4.0**.
+This document describes the contract as of plugin **2.1.0**. Routes, request bodies, response shapes and the key
+are the same as in **1.4.0**; 2.1.0 adds 403 responses (see "Run-as user") and limits image imports.
 Any change here must stay backward compatible with sites that have not updated the plugin
 (and with backends that do not know about a new field yet).
 
@@ -40,15 +41,80 @@ HTTP 401
 
 Key format: `fl_` + `bin2hex(random_bytes(24))` → 51 chars. The UI hint is the first 7 chars + `…`.
 
+### Connection code (2.1.0+)
+
+Right after a key is created the plugin page shows a **connection code** instead of the bare key, so the
+user pastes one string into Florank instead of the site address and the key. The backend never sees the
+code: Florank's frontend decodes it and sends `baseUrl` and `apiKey` as before.
+
+```
+flc1_ + base64url( JSON {"u": "<site address>", "k": "<api key>"} )
+```
+
+- `flc1_` — format prefix; `1` is the version. A different payload means a new prefix (`flc2_`), and decoders
+  must reject prefixes they do not know.
+- base64url — RFC 4648 §5 alphabet (`-` and `_`), **no `=` padding**. Decoders should also accept padding.
+- JSON — UTF-8, object with exactly these string fields (extra fields must be ignored):
+  - `u` — `untrailingslashit( home_url() )`. This is the backend `baseUrl`: WordPress serves `/wp-json/` relative
+    to `home_url()` (`get_rest_url()`), not `site_url()`, so for WordPress installed in a subfolder with the
+    home page at the root `u` is the root. Slashes are not escaped; non-ASCII may come as `\uXXXX`.
+  - `k` — the plain key (`fl_…`), shown once.
+- Valid code: prefix matches, base64url decodes, JSON is an object, `u` is a non-empty string, `k` starts with `fl_`.
+  Florank additionally requires `u` to be an `http(s)` URL.
+- The plugin keeps the bare key under "Show the key separately" for Florank versions without code support.
+
+Test vector (plugin `ConnectionCodeTest` and Florank frontend `wordpress-connection-code.test.ts` use it):
+
+```
+u    = https://site.example
+k    = fl_0123456789abcdef0123456789abcdef0123456789abcdef
+code = flc1_eyJ1IjoiaHR0cHM6Ly9zaXRlLmV4YW1wbGUiLCJrIjoiZmxfMDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVmIn0
+```
+
+Why JSON + base64url and not, say, `key@host`: the address can contain a port, a path and non-ASCII
+characters, and JSON leaves room for new fields without a new parser; base64url keeps the code a single
+token that survives copy-paste, chat apps and URL query strings.
+
+### Run-as user (2.1.0+)
+
+After the key is accepted, the request runs as the WordPress user stored in option `florank_run_as_user`
+(`wp_set_current_user`), and WordPress capability checks apply. 1.x substituted the first administrator instead.
+
+- Set when a key is created on the plugin page (the administrator who clicked "Create key"); the site owner can change it
+  to any user with `edit_posts` and `upload_files`.
+- Keys created by 1.x have no stored user: on the first authorized request (or the first admin page load) after the update
+  the first administrator (lowest ID) is stored **once**. Later changes are never overwritten.
+- Successful authorization stores the time in option `florank_last_request` (shown as "Connected").
+
+New errors (all routes, after a valid key):
+
+```
+HTTP 403 { "code": "florank_user_missing",   "message": "The WordPress user Florank publishes as does not exist. …" }
+HTTP 403 { "code": "florank_user_forbidden", "message": "The WordPress user Florank publishes as (login) cannot edit posts or upload files. …" }
+```
+
+Per operation (only possible when the site owner picked a non-administrator):
+
+- `POST /posts` with `status` `publish`/`future` needs `publish_posts`; `POST /posts/{id}` on an existing post needs
+  `edit_post`; `DELETE /posts/{id}` on an existing post needs `delete_post` →
+  otherwise `HTTP 403 { "code": "florank_forbidden", … }`. Unknown IDs keep the 1.4 responses (500 / 400).
+- `author_email` is applied only if it is the run-as user or the run-as user has `edit_others_posts`; otherwise ignored.
+
+Messages are translated to the site language; the backend shows them as is (`HTTP 403: {body}`).
+
 ## Stored data (must not be renamed — upgrade compatibility)
 
 | Name | Kind | Content |
 |---|---|---|
 | `florank_api_key_hash` | option | password hash of the API key |
 | `florank_api_key_hint` | option | `fl_xxxx…` |
-| `florank_new_api_key` | transient, 10 min | plain key right after generation (shown once) |
+| `florank_new_api_key` | transient, 10 min | plain key right after generation (shown once, also inside the connection code) |
 | `florank_indexnow_key` | option, autoload no | IndexNow key |
 | `_florank_schema_json_ld` | post meta | JSON-encoded schema from `schema_json_ld` |
+| `florank_run_as_user` | option (2.1.0+) | ID of the user requests run as; `0` if no administrator was found during migration |
+| `florank_last_request` | option (2.1.0+) | Unix time of the last authorized request; cleared on new / revoked key |
+| `_florank_managed` | post meta (2.1.0+) | `1` on posts created or updated through the API (plugin page list) |
+| `_florank_source_url`, `_florank_source_hash` | attachment meta (2.1.0+) | source URL and SHA-256 of imported images (reuse on update) |
 | `_yoast_wpseo_title`, `_yoast_wpseo_metadesc` | post meta | SEO title / description (Yoast) |
 | `rank_math_title`, `rank_math_description` | post meta | SEO title / description (Rank Math) |
 
@@ -81,7 +147,7 @@ and for lists also `title`, `slug`, `status`, `modified`.
 Response 200:
 
 ```json
-{ "ok": true, "plugin": "florank", "version": "2.0.0", "seoPlugin": "yoast", "siteUrl": "https://site.example/" }
+{ "ok": true, "plugin": "florank", "version": "2.1.0", "seoPlugin": "yoast", "siteUrl": "https://site.example/" }
 ```
 
 - `seoPlugin`: `"rankmath"` if `RANK_MATH_VERSION` is defined or class `RankMath` exists; else `"yoast"` if
@@ -118,7 +184,7 @@ Request body (as built by `WordpressAdapter.pluginBody`):
 | `meta_title` | string | `sanitize_text_field`; falls back to `title` when missing; written to Yoast and Rank Math meta |
 | `meta_description` | string | `sanitize_textarea_field`; written to Yoast and Rank Math meta |
 | `featured_image` | packed image, optional | imported as bytes → featured image |
-| `featured_image_url` | string, optional | used only if `featured_image` is missing or failed: downloaded with `media_sideload_image` |
+| `featured_image_url` | string, optional | used only if `featured_image` is missing or failed: downloaded only from allowed hosts (see Images) |
 | `featured_image_alt` | string, optional | alt text of the featured image (`_wp_attachment_image_alt`) |
 | `content_images` | packed image[] | each imported as bytes; every occurrence of its `sourceUrl` in content is replaced with the local URL |
 | `categories` | int[] | `wp_set_post_categories` when non-empty (from connection config `categoryIds`) |
@@ -132,20 +198,35 @@ Packed image (`PackedWpImage` in `wordpress-media.util.ts`, max 8 MB before base
 { "sourceUrl": "https://…/image.png", "filename": "image.png", "mime": "image/png", "data": "<base64>", "alt": "" }
 ```
 
-- `filename` → `sanitize_file_name` (default `image.png`). `mime` is not used by the plugin (WordPress detects the type).
+- `filename` → `sanitize_file_name` (default `image.png`). `mime` is not used by the plugin (the real type is detected
+  with `wp_check_filetype_and_ext`; a wrong extension is corrected).
 - The same `sourceUrl` is imported once per request.
 
 After bytes are processed, any remaining `<img src="…">` and Markdown `![](http…)` URLs in the content are
-downloaded with `media_sideload_image` (skipping URLs already in this site's uploads), and the content is
+downloaded (only from allowed hosts, skipping URLs already in this site's uploads), and the content is
 rewritten to local URLs.
+
+### Images (2.1.0+)
+
+- Remote URLs (`featured_image_url`, URLs left in content) are fetched only over `https` (port 443, no credentials, no
+  redirects) from hosts in filter `florank_allowed_image_hosts`, default `*.blob.vercel-storage.com` (Vercel Blob, where
+  the backend stores article images — `LocalImageStorage`), `florank.ai`, `api.florank.ai`. Other URLs are skipped
+  silently and stay in the content as they are. Packed images (bytes) are accepted from any `sourceUrl`.
+- Max size 10 MB (filter `florank_max_image_bytes`); backend packs up to 8 MB, so packed images always fit.
+- Only `image/jpeg`, `image/png`, `image/webp`, `image/gif`, `image/avif` (real type). Anything else is skipped silently.
+- Reuse: an attachment with the same `_florank_source_url`, or the same SHA-256 of bytes, is reused instead of importing
+  again (updates no longer create duplicates). Deleted attachments are imported again.
 
 Errors: `wp_insert_post` / `wp_update_post` `WP_Error` is returned as is. Example: `POST /posts/999999` (unknown ID) →
 `500 { "code": "invalid_post", "message": "Invalid post ID.", "data": null }` (same in 1.4.0).
 Image import failures are silent: the post is saved without that image.
 
-Order of operations: post saved → SEO meta → IndexNow key → author → JSON-LD → categories →
-current user switched to the first administrator (needed by media functions, **to be removed in stage 2**) →
-featured image → content images → content rewrite.
+Order of operations: key check → run-as user (403 if missing / no rights) → capability checks → post saved →
+`_florank_managed` → SEO meta → IndexNow key → author → JSON-LD → categories → featured image → content images →
+content rewrite.
+
+Change visible to the backend: in 1.x posts created without a matching `author_email` had `post_author = 0`;
+from 2.1.0 the author is the run-as user.
 
 ### `DELETE /posts/{id}`
 

@@ -25,6 +25,11 @@ class PostService {
 	const ALLOWED_STATUSES = array( 'draft', 'publish', 'future' );
 
 	/**
+	 * Post meta that marks posts created or updated through Florank.
+	 */
+	const META_MANAGED = '_florank_managed';
+
+	/**
 	 * SEO plugin bridge.
 	 *
 	 * @var SeoBridge
@@ -101,6 +106,27 @@ class PostService {
 	}
 
 	/**
+	 * Latest posts created or updated through Florank, any status.
+	 *
+	 * @param int $limit Number of posts.
+	 * @return WP_Post[]
+	 */
+	public function recent_managed( $limit = 10 ) {
+		$query = new WP_Query(
+			array(
+				'post_type'      => 'post',
+				'post_status'    => array( 'publish', 'future', 'draft', 'pending', 'private' ),
+				'posts_per_page' => $limit,
+				'orderby'        => 'modified',
+				'order'          => 'DESC',
+				'meta_key'       => self::META_MANAGED, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+				'no_found_rows'  => true,
+			)
+		);
+		return $query->posts;
+	}
+
+	/**
 	 * One post by ID.
 	 *
 	 * @param int $id Post ID.
@@ -121,6 +147,9 @@ class PostService {
 	 * @return array<string, mixed>|WP_Error
 	 */
 	public function delete( $id ) {
+		if ( get_post( $id ) && ! current_user_can( 'delete_post', $id ) ) {
+			return self::forbidden();
+		}
 		$deleted = wp_delete_post( $id, true );
 		if ( ! $deleted ) {
 			return new WP_Error( 'florank_delete_failed', __( 'Could not delete post', 'florank' ), array( 'status' => 400 ) );
@@ -140,13 +169,20 @@ class PostService {
 	 * @return int|WP_Error Post ID.
 	 */
 	public function upsert( $id, array $body ) {
+		$status = self::sanitize_status( $body['status'] ?? '' );
+		if ( $id > 0 && get_post( $id ) && ! current_user_can( 'edit_post', $id ) ) {
+			return self::forbidden();
+		}
+		if ( 'draft' !== $status && ! current_user_can( 'publish_posts' ) ) {
+			return self::forbidden();
+		}
 		$data = array(
 			'post_type'    => 'post',
 			'post_title'   => sanitize_text_field( $body['title'] ?? '' ),
 			'post_name'    => sanitize_title( $body['slug'] ?? '' ),
 			'post_content' => wp_kses_post( $body['content'] ?? '' ),
 			'post_excerpt' => sanitize_textarea_field( $body['excerpt'] ?? '' ),
-			'post_status'  => self::sanitize_status( $body['status'] ?? '' ),
+			'post_status'  => $status,
 		);
 		if ( $id > 0 ) {
 			$data['ID'] = $id;
@@ -157,6 +193,7 @@ class PostService {
 		if ( is_wp_error( $post_id ) ) {
 			return $post_id;
 		}
+		update_post_meta( $post_id, self::META_MANAGED, '1' );
 
 		$this->seo->write_meta(
 			$post_id,
@@ -169,7 +206,7 @@ class PostService {
 		$author_email = sanitize_email( $body['author_email'] ?? '' );
 		if ( '' !== $author_email ) {
 			$author = get_user_by( 'email', $author_email );
-			if ( $author ) {
+			if ( $author && ( get_current_user_id() === (int) $author->ID || current_user_can( 'edit_others_posts' ) ) ) {
 				wp_update_post(
 					array(
 						'ID'          => $post_id,
@@ -184,8 +221,6 @@ class PostService {
 		if ( ! empty( $body['categories'] ) && is_array( $body['categories'] ) ) {
 			wp_set_post_categories( $post_id, array_map( 'intval', $body['categories'] ) );
 		}
-
-		self::act_as_admin();
 
 		$this->import_images( $post_id, $body );
 
@@ -241,29 +276,16 @@ class PostService {
 	}
 
 	/**
-	 * Media Library uploads need a user with upload_files; REST requests from
-	 * Florank are authenticated by API key, not by a user, so v1.2+ switches
-	 * to the first administrator.
+	 * 403 for an action the Florank user may not perform.
 	 *
-	 * TODO(stage-2): remove the administrator substitution. Run Florank
-	 * requests as a user chosen by the site owner (default: whoever created
-	 * the key) and check capabilities. Blocker for wordpress.org review.
-	 * See plan "wordpress-plugin.md", section «Безпека».
+	 * @return WP_Error
 	 */
-	private static function act_as_admin() {
-		if ( get_current_user_id() ) {
-			return;
-		}
-		$admins = get_users(
-			array(
-				'role'   => 'administrator',
-				'number' => 1,
-				'fields' => 'ID',
-			)
+	private static function forbidden() {
+		return new WP_Error(
+			'florank_forbidden',
+			__( 'The WordPress user Florank publishes as is not allowed to do this. Choose another user on the Florank page in WordPress.', 'florank' ),
+			array( 'status' => 403 )
 		);
-		if ( ! empty( $admins[0] ) ) {
-			wp_set_current_user( (int) $admins[0] );
-		}
 	}
 
 	/**

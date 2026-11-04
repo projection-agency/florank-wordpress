@@ -1,0 +1,27 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and attach florank.zip
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build (fails if the tag does not match the plugin version)
+        run: ./bin/build-zip.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: florank
+          path: build/florank.zip
+          if-no-files-found: error
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: build/florank.zip
+          generate_release_notes: true
+          fail_on_unmatched_files: true

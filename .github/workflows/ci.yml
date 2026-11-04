@@ -1,0 +1,122 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  php-lint:
+    name: PHP syntax (${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.0', '8.4']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: none
+      - run: find . -name '*.php' -not -path './vendor/*' -print0 | xargs -0 -n1 php -l
+
+  phpcs:
+    name: PHPCS (WordPress Coding Standards)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          tools: composer:v2
+      - run: composer install --no-interaction --no-progress
+      - run: vendor/bin/phpcs
+
+  unit:
+    name: Unit tests (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: ['8.0', '8.3']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer:v2
+      - run: composer install --no-interaction --no-progress
+      - run: composer test
+
+  integration:
+    name: Integration tests (wp-env)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          tools: composer:v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: composer install --no-interaction --no-progress
+      - run: npx --yes @wordpress/env@10 start
+      - run: npx --yes @wordpress/env@10 run tests-cli --env-cwd="wp-content/plugins/$(basename "$PWD")" vendor/bin/phpunit -c phpunit-integration.xml.dist
+      - if: ${{ always() }}
+        run: npx --yes @wordpress/env@10 stop || true
+
+  i18n:
+    name: Translation template is up to date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          tools: wp-cli
+      - run: wp i18n make-pot . /tmp/florank.pot --slug=florank --domain=florank --exclude=vendor,tests,build,bin,docs
+      - name: Compare msgids with languages/florank.pot
+        run: |
+          extract() { grep -E '^msgid ' "$1" | grep -v '^msgid ""$' | sort -u; }
+          diff <(extract languages/florank.pot) <(extract /tmp/florank.pot) \
+            || { echo "::error::languages/florank.pot is out of date. Regenerate it with: wp i18n make-pot . languages/florank.pot --slug=florank --domain=florank --exclude=vendor,tests,build,bin,docs"; exit 1; }
+
+  build:
+    name: Build florank.zip
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: ./bin/build-zip.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: florank
+          path: build/florank.zip
+          if-no-files-found: error
+
+  plugin-check:
+    name: Plugin Check
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: florank
+          path: dist
+      - run: unzip -q dist/florank.zip -d dist
+      - uses: wordpress/plugin-check-action@v1
+        with:
+          build-dir: dist/florank

@@ -1,0 +1,72 @@
+# Copyright (C) 2026 Florank
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Florank 2.0.0\n"
+"Report-Msgid-Bugs-To: https://florank.ai\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-11-04T01:52:04+00:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Domain: florank\n"
+
+#. Plugin Name of the plugin
+#: florank.php
+#: src/Admin/SettingsPage.php:46 src/Admin/SettingsPage.php:47 src/Admin/SettingsPage.php:87
+msgid "Florank"
+msgstr ""
+
+#. Plugin URI of the plugin
+#: florank.php
+msgid "https://florank.ai"
+msgstr ""
+
+#. Description of the plugin
+#: florank.php
+msgid "Connect this WordPress site to Florank to publish articles and sync SEO fields."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:61
+msgid "Forbidden"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:88
+msgid "Generate an API key and paste it in Florank → Connect WordPress."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:90
+msgid "Copy this key now."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:90
+msgid "It will not be shown again."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:92
+msgid "Copy Key"
+msgstr ""
+
+#. translators: %s: first characters of the active API key, e.g. "fl_ab12…".
+#: src/Admin/SettingsPage.php:95
+#, php-format
+msgid "A key is already active (%s). Generate a new one to rotate."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:100
+msgid "Generate New API Key"
+msgstr ""
+
+#: src/Posts/PostService.php:112
+msgid "Post not found"
+msgstr ""
+
+#: src/Posts/PostService.php:126
+msgid "Could not delete post"
+msgstr ""
+
+#: src/Rest/Controller.php:133
+msgid "Invalid Florank API key"
+msgstr ""

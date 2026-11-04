@@ -1,0 +1,39 @@
+name: Deploy to WordPress.org
+
+# Disabled until the plugin is approved on WordPress.org.
+# Turn on: add secrets SVN_USERNAME and SVN_PASSWORD and set the repository
+# variable WPORG_DEPLOY to "true" (see README.md, "WordPress.org").
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wporg-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy to the WordPress.org SVN
+    if: ${{ vars.WPORG_DEPLOY == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build (fails if the tag does not match the plugin version)
+        run: ./bin/build-zip.sh
+      - name: Read plugin version
+        id: version
+        run: echo "version=$(sed -n 's/^ \* Version:[[:space:]]*//p' florank.php | head -n1)" >> "$GITHUB_OUTPUT"
+      - name: Deploy plugin and .wordpress-org assets
+        uses: 10up/action-wordpress-plugin-deploy@2.3.0
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: florank
+          BUILD_DIR: build/florank
+          ASSETS_DIR: .wordpress-org
+          VERSION: ${{ steps.version.outputs.version }}

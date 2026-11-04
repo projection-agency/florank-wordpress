@@ -2,24 +2,25 @@
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Florank 2.0.0\n"
+"Project-Id-Version: Florank 2.1.0\n"
 "Report-Msgid-Bugs-To: https://florank.ai\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-04T01:52:04+00:00\n"
+"POT-Creation-Date: 2026-11-04T02:27:57+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "X-Domain: florank\n"
 
 #. Plugin Name of the plugin
-#: florank.php
-#: src/Admin/SettingsPage.php:46 src/Admin/SettingsPage.php:47 src/Admin/SettingsPage.php:87
+#. Author of the plugin
+#: florank.php src/Admin/SettingsPage.php:83 src/Admin/SettingsPage.php:84 src/Admin/SettingsPage.php:228
 msgid "Florank"
 msgstr ""
 
 #. Plugin URI of the plugin
+#. Author URI of the plugin
 #: florank.php
 msgid "https://florank.ai"
 msgstr ""
@@ -29,44 +30,191 @@ msgstr ""
 msgid "Connect this WordPress site to Florank to publish articles and sync SEO fields."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:61
+#: src/Admin/SettingsPage.php:169
 msgid "Forbidden"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:88
-msgid "Generate an API key and paste it in Florank → Connect WordPress."
+#: src/Admin/SettingsPage.php:220
+msgid "Key revoked"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:90
-msgid "Copy this key now."
+#: src/Admin/SettingsPage.php:221
+msgid "Saved"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:90
-msgid "It will not be shown again."
+#: src/Admin/SettingsPage.php:222 src/Admin/SettingsPage.php:392
+msgid "This user cannot edit posts or upload files."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:92
-msgid "Copy Key"
+#: src/Admin/SettingsPage.php:239
+msgid "Connection"
 msgstr ""
 
-#. translators: %s: first characters of the active API key, e.g. "fl_ab12…".
-#: src/Admin/SettingsPage.php:95
+#: src/Admin/SettingsPage.php:244
+msgid "Create a key"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:251
+msgid "Paste the key in Florank"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:254
+msgid "Copy site address"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:254 src/Admin/SettingsPage.php:329
+msgid "Copied"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:257
+msgid "Open Florank"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:264 src/Admin/SettingsPage.php:431
+msgid "Status"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:266 src/Admin/SettingsPage.php:301
+msgid "Connected"
+msgstr ""
+
+#. translators: %s: date and time of the last request from Florank.
+#: src/Admin/SettingsPage.php:270
 #, php-format
-msgid "A key is already active (%s). Generate a new one to rotate."
+msgid "Last request: %s"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:100
-msgid "Generate New API Key"
+#. translators: %s: date and time of the last request from Florank.
+#: src/Admin/SettingsPage.php:270 src/Admin/SettingsPage.php:464
+msgid "Y-m-d H:i"
 msgstr ""
 
-#: src/Posts/PostService.php:112
+#: src/Admin/SettingsPage.php:274 src/Admin/SettingsPage.php:304
+msgid "Waiting for the first request"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:276 src/Admin/SettingsPage.php:307
+msgid "Not connected"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:320
+msgid "Create key"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:329
+msgid "Copy"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:330
+msgid "Shown once"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:339
+msgid "New key"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:340
+msgid "Revoke key"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:343
+msgid "Revoke the key? Florank will stop publishing to this site."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:345
+msgid "Yes, revoke"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:346 src/Admin/SettingsPage.php:409
+msgid "Cancel"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:381 src/Admin/SettingsPage.php:400
+msgid "Publishing as"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:390
+msgid "Change"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:394
+msgid "User not found. Choose another one."
+msgstr ""
+
+#: src/Admin/SettingsPage.php:407
+msgid "Save"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:424
+msgid "Latest articles from Florank"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:426
+msgid "No articles yet"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:430
+msgid "Title"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:432
+msgid "Updated"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:433
+msgid "Link"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:451
+msgid "(no title)"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:467
+msgid "View"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:482
+msgid "Published"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:483
+msgid "Draft"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:484
+msgid "Scheduled"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:485
+msgid "Pending"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:486
+msgid "Private"
+msgstr ""
+
+#: src/Auth/RunAsUser.php:107
+msgid "The WordPress user Florank publishes as does not exist. Choose another user on the Florank page in WordPress."
+msgstr ""
+
+#. translators: %s: WordPress user login.
+#: src/Auth/RunAsUser.php:116
+#, php-format
+msgid "The WordPress user Florank publishes as (%s) cannot edit posts or upload files. Choose another user on the Florank page in WordPress."
+msgstr ""
+
+#: src/Posts/PostService.php:138
 msgid "Post not found"
 msgstr ""
 
-#: src/Posts/PostService.php:126
+#: src/Posts/PostService.php:155
 msgid "Could not delete post"
 msgstr ""
 
-#: src/Rest/Controller.php:133
+#: src/Posts/PostService.php:286
+msgid "The WordPress user Florank publishes as is not allowed to do this. Choose another user on the Florank page in WordPress."
+msgstr ""
+
+#: src/Rest/Controller.php:144
 msgid "Invalid Florank API key"
 msgstr ""

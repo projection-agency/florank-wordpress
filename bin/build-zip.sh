@@ -9,7 +9,7 @@ OUT="$ROOT/build"
 STAGE="$OUT/$SLUG"
 
 # Files and folders shipped in the plugin zip.
-INCLUDE=(florank.php uninstall.php readme.txt LICENSE src languages)
+INCLUDE=(florank.php uninstall.php readme.txt LICENSE src languages assets)
 
 rm -rf "$OUT"
 mkdir -p "$STAGE"

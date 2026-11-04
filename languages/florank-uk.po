@@ -1,0 +1,223 @@
+# Copyright (C) 2026 Florank
+# Ukrainian translation for Florank.
+# This file is distributed under the GPLv2 or later.
+msgid ""
+msgstr ""
+"Project-Id-Version: Florank 2.1.0\n"
+"Report-Msgid-Bugs-To: https://florank.ai\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-11-04T02:27:57+00:00\n"
+"PO-Revision-Date: 2026-11-04 00:00+0000\n"
+"Last-Translator: Florank <hello@florank.ai>\n"
+"Language-Team: Ukrainian\n"
+"Language: uk\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Domain: florank\n"
+
+#. Plugin Name of the plugin
+#. Author of the plugin
+#: florank.php src/Admin/SettingsPage.php:83 src/Admin/SettingsPage.php:84 src/Admin/SettingsPage.php:228
+msgid "Florank"
+msgstr "Florank"
+
+#. Plugin URI of the plugin
+#. Author URI of the plugin
+#: florank.php
+msgid "https://florank.ai"
+msgstr "https://florank.ai"
+
+#. Description of the plugin
+#: florank.php
+msgid "Connect this WordPress site to Florank to publish articles and sync SEO fields."
+msgstr "Підключіть сайт WordPress до Florank, щоб публікувати статті й синхронізувати SEO-поля."
+
+#: src/Admin/SettingsPage.php:169
+msgid "Forbidden"
+msgstr "Доступ заборонено"
+
+#: src/Admin/SettingsPage.php:220
+msgid "Key revoked"
+msgstr "Ключ відкликано"
+
+#: src/Admin/SettingsPage.php:221
+msgid "Saved"
+msgstr "Збережено"
+
+#: src/Admin/SettingsPage.php:222 src/Admin/SettingsPage.php:392
+msgid "This user cannot edit posts or upload files."
+msgstr "Цей користувач не може редагувати записи або завантажувати файли."
+
+#: src/Admin/SettingsPage.php:239
+msgid "Connection"
+msgstr "Підключення"
+
+#: src/Admin/SettingsPage.php:244
+msgid "Create a key"
+msgstr "Створіть ключ"
+
+#: src/Admin/SettingsPage.php:251
+msgid "Paste the key in Florank"
+msgstr "Вставте ключ у Florank"
+
+#: src/Admin/SettingsPage.php:254
+msgid "Copy site address"
+msgstr "Копіювати адресу сайту"
+
+#: src/Admin/SettingsPage.php:254 src/Admin/SettingsPage.php:329
+msgid "Copied"
+msgstr "Скопійовано"
+
+#: src/Admin/SettingsPage.php:257
+msgid "Open Florank"
+msgstr "Відкрити Florank"
+
+#: src/Admin/SettingsPage.php:264 src/Admin/SettingsPage.php:431
+msgid "Status"
+msgstr "Статус"
+
+#: src/Admin/SettingsPage.php:266 src/Admin/SettingsPage.php:301
+msgid "Connected"
+msgstr "Підключено"
+
+#. translators: %s: date and time of the last request from Florank.
+#: src/Admin/SettingsPage.php:270
+#, php-format
+msgid "Last request: %s"
+msgstr "Останній запит: %s"
+
+#. translators: %s: date and time of the last request from Florank.
+#: src/Admin/SettingsPage.php:270 src/Admin/SettingsPage.php:464
+msgid "Y-m-d H:i"
+msgstr "d.m.Y H:i"
+
+#: src/Admin/SettingsPage.php:274 src/Admin/SettingsPage.php:304
+msgid "Waiting for the first request"
+msgstr "Очікуємо першого запиту"
+
+#: src/Admin/SettingsPage.php:276 src/Admin/SettingsPage.php:307
+msgid "Not connected"
+msgstr "Не підключено"
+
+#: src/Admin/SettingsPage.php:320
+msgid "Create key"
+msgstr "Створити ключ"
+
+#: src/Admin/SettingsPage.php:329
+msgid "Copy"
+msgstr "Копіювати"
+
+#: src/Admin/SettingsPage.php:330
+msgid "Shown once"
+msgstr "Показується один раз"
+
+#: src/Admin/SettingsPage.php:339
+msgid "New key"
+msgstr "Новий ключ"
+
+#: src/Admin/SettingsPage.php:340
+msgid "Revoke key"
+msgstr "Відкликати ключ"
+
+#: src/Admin/SettingsPage.php:343
+msgid "Revoke the key? Florank will stop publishing to this site."
+msgstr "Відкликати ключ? Florank більше не зможе публікувати на цей сайт."
+
+#: src/Admin/SettingsPage.php:345
+msgid "Yes, revoke"
+msgstr "Так, відкликати"
+
+#: src/Admin/SettingsPage.php:346 src/Admin/SettingsPage.php:409
+msgid "Cancel"
+msgstr "Скасувати"
+
+#: src/Admin/SettingsPage.php:381 src/Admin/SettingsPage.php:400
+msgid "Publishing as"
+msgstr "Публікація від імені"
+
+#: src/Admin/SettingsPage.php:390
+msgid "Change"
+msgstr "Змінити"
+
+#: src/Admin/SettingsPage.php:394
+msgid "User not found. Choose another one."
+msgstr "Користувача не знайдено. Оберіть іншого."
+
+#: src/Admin/SettingsPage.php:407
+msgid "Save"
+msgstr "Зберегти"
+
+#: src/Admin/SettingsPage.php:424
+msgid "Latest articles from Florank"
+msgstr "Останні статті з Florank"
+
+#: src/Admin/SettingsPage.php:426
+msgid "No articles yet"
+msgstr "Поки немає статей"
+
+#: src/Admin/SettingsPage.php:430
+msgid "Title"
+msgstr "Назва"
+
+#: src/Admin/SettingsPage.php:432
+msgid "Updated"
+msgstr "Оновлено"
+
+#: src/Admin/SettingsPage.php:433
+msgid "Link"
+msgstr "Посилання"
+
+#: src/Admin/SettingsPage.php:451
+msgid "(no title)"
+msgstr "(без назви)"
+
+#: src/Admin/SettingsPage.php:467
+msgid "View"
+msgstr "Відкрити"
+
+#: src/Admin/SettingsPage.php:482
+msgid "Published"
+msgstr "Опубліковано"
+
+#: src/Admin/SettingsPage.php:483
+msgid "Draft"
+msgstr "Чернетка"
+
+#: src/Admin/SettingsPage.php:484
+msgid "Scheduled"
+msgstr "Заплановано"
+
+#: src/Admin/SettingsPage.php:485
+msgid "Pending"
+msgstr "На розгляді"
+
+#: src/Admin/SettingsPage.php:486
+msgid "Private"
+msgstr "Приватний"
+
+#: src/Auth/RunAsUser.php:107
+msgid "The WordPress user Florank publishes as does not exist. Choose another user on the Florank page in WordPress."
+msgstr "Користувача WordPress, від імені якого публікує Florank, не існує. Оберіть іншого користувача на сторінці Florank у WordPress."
+
+#. translators: %s: WordPress user login.
+#: src/Auth/RunAsUser.php:116
+#, php-format
+msgid "The WordPress user Florank publishes as (%s) cannot edit posts or upload files. Choose another user on the Florank page in WordPress."
+msgstr "Користувач WordPress, від імені якого публікує Florank (%s), не може редагувати записи або завантажувати файли. Оберіть іншого користувача на сторінці Florank у WordPress."
+
+#: src/Posts/PostService.php:138
+msgid "Post not found"
+msgstr "Запис не знайдено"
+
+#: src/Posts/PostService.php:155
+msgid "Could not delete post"
+msgstr "Не вдалося видалити запис"
+
+#: src/Posts/PostService.php:286
+msgid "The WordPress user Florank publishes as is not allowed to do this. Choose another user on the Florank page in WordPress."
+msgstr "Користувач WordPress, від імені якого публікує Florank, не має на це прав. Оберіть іншого користувача на сторінці Florank у WordPress."
+
+#: src/Rest/Controller.php:144
+msgid "Invalid Florank API key"
+msgstr "Недійсний API-ключ Florank"

@@ -292,14 +292,13 @@ class ImageImporter {
 		foreach ( $pairs as $meta_key => $meta_value ) {
 			$ids = get_posts(
 				array(
-					'post_type'        => 'attachment',
-					'post_status'      => 'inherit',
-					'posts_per_page'   => 1,
-					'fields'           => 'ids',
-					'no_found_rows'    => true,
-					'suppress_filters' => true,
-					'meta_key'         => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
-					'meta_value'       => $meta_value, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
+					'post_type'      => 'attachment',
+					'post_status'    => 'inherit',
+					'posts_per_page' => 1,
+					'fields'         => 'ids',
+					'no_found_rows'  => true,
+					'meta_key'       => $meta_key, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_key
+					'meta_value'     => $meta_value, // phpcs:ignore WordPress.DB.SlowDBQuery.slow_db_query_meta_value
 				)
 			);
 			if ( empty( $ids[0] ) ) {

@@ -374,6 +374,30 @@ body.florank-admin-page {
 	font-size: 14px;
 }
 
+.florank-admin .florank-label {
+	color: var(--fl-muted);
+	font-size: 12px;
+}
+
+.florank-admin .florank-details {
+	width: 100%;
+}
+
+.florank-admin .florank-details summary {
+	width: fit-content;
+	color: var(--fl-muted);
+	font-size: 13px;
+	cursor: pointer;
+}
+
+.florank-admin .florank-details summary:hover {
+	color: var(--fl-text);
+}
+
+.florank-admin .florank-details[open] summary {
+	margin-bottom: 0.5rem;
+}
+
 .florank-admin .florank-icon-btn {
 	position: absolute;
 	top: 50%;

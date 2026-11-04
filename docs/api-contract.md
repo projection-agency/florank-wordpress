@@ -41,6 +41,40 @@ HTTP 401
 
 Key format: `fl_` + `bin2hex(random_bytes(24))` → 51 chars. The UI hint is the first 7 chars + `…`.
 
+### Connection code (2.1.0+)
+
+Right after a key is created the plugin page shows a **connection code** instead of the bare key, so the
+user pastes one string into Florank instead of the site address and the key. The backend never sees the
+code: Florank's frontend decodes it and sends `baseUrl` and `apiKey` as before.
+
+```
+flc1_ + base64url( JSON {"u": "<site address>", "k": "<api key>"} )
+```
+
+- `flc1_` — format prefix; `1` is the version. A different payload means a new prefix (`flc2_`), and decoders
+  must reject prefixes they do not know.
+- base64url — RFC 4648 §5 alphabet (`-` and `_`), **no `=` padding**. Decoders should also accept padding.
+- JSON — UTF-8, object with exactly these string fields (extra fields must be ignored):
+  - `u` — `untrailingslashit( home_url() )`. This is the backend `baseUrl`: WordPress serves `/wp-json/` relative
+    to `home_url()` (`get_rest_url()`), not `site_url()`, so for WordPress installed in a subfolder with the
+    home page at the root `u` is the root. Slashes are not escaped; non-ASCII may come as `\uXXXX`.
+  - `k` — the plain key (`fl_…`), shown once.
+- Valid code: prefix matches, base64url decodes, JSON is an object, `u` is a non-empty string, `k` starts with `fl_`.
+  Florank additionally requires `u` to be an `http(s)` URL.
+- The plugin keeps the bare key under "Show the key separately" for Florank versions without code support.
+
+Test vector (plugin `ConnectionCodeTest` and Florank frontend `wordpress-connection-code.test.ts` use it):
+
+```
+u    = https://site.example
+k    = fl_0123456789abcdef0123456789abcdef0123456789abcdef
+code = flc1_eyJ1IjoiaHR0cHM6Ly9zaXRlLmV4YW1wbGUiLCJrIjoiZmxfMDEyMzQ1Njc4OWFiY2RlZjAxMjM0NTY3ODlhYmNkZWYwMTIzNDU2Nzg5YWJjZGVmIn0
+```
+
+Why JSON + base64url and not, say, `key@host`: the address can contain a port, a path and non-ASCII
+characters, and JSON leaves room for new fields without a new parser; base64url keeps the code a single
+token that survives copy-paste, chat apps and URL query strings.
+
 ### Run-as user (2.1.0+)
 
 After the key is accepted, the request runs as the WordPress user stored in option `florank_run_as_user`
@@ -74,7 +108,7 @@ Messages are translated to the site language; the backend shows them as is (`HTT
 |---|---|---|
 | `florank_api_key_hash` | option | password hash of the API key |
 | `florank_api_key_hint` | option | `fl_xxxx…` |
-| `florank_new_api_key` | transient, 10 min | plain key right after generation (shown once) |
+| `florank_new_api_key` | transient, 10 min | plain key right after generation (shown once, also inside the connection code) |
 | `florank_indexnow_key` | option, autoload no | IndexNow key |
 | `_florank_schema_json_ld` | post meta | JSON-encoded schema from `schema_json_ld` |
 | `florank_run_as_user` | option (2.1.0+) | ID of the user requests run as; `0` if no administrator was found during migration |

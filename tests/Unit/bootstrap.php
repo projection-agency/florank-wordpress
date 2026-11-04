@@ -145,3 +145,12 @@ function wp_json_encode( $data, $flags = 0, $depth = 512 ) {
 function sanitize_key( $key ) {
 	return preg_replace( '/[^a-z0-9_\-]/', '', strtolower( (string) $key ) );
 }
+
+function untrailingslashit( $value ) {
+	return rtrim( (string) $value, '/\\' );
+}
+
+function home_url( $path = '' ) {
+	$home = isset( $GLOBALS['florank_test_options']['home'] ) ? $GLOBALS['florank_test_options']['home'] : 'https://site.example';
+	return $home . ( '' === $path ? '' : '/' . ltrim( $path, '/' ) );
+}

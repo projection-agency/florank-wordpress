@@ -7,7 +7,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-11-04T02:27:57+00:00\n"
+"POT-Creation-Date: 2026-11-04T14:04:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -15,7 +15,7 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #. Author of the plugin
-#: florank.php src/Admin/SettingsPage.php:83 src/Admin/SettingsPage.php:84 src/Admin/SettingsPage.php:228
+#: florank.php src/Admin/SettingsPage.php:84 src/Admin/SettingsPage.php:85 src/Admin/SettingsPage.php:229
 msgid "Florank"
 msgstr ""
 
@@ -30,166 +30,174 @@ msgstr ""
 msgid "Connect this WordPress site to Florank to publish articles and sync SEO fields."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:169
+#: src/Admin/SettingsPage.php:170
 msgid "Forbidden"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:220
+#: src/Admin/SettingsPage.php:221
 msgid "Key revoked"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:221
+#: src/Admin/SettingsPage.php:222
 msgid "Saved"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:222 src/Admin/SettingsPage.php:392
+#: src/Admin/SettingsPage.php:223 src/Admin/SettingsPage.php:423
 msgid "This user cannot edit posts or upload files."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:239
+#: src/Admin/SettingsPage.php:240
 msgid "Connection"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:244
+#: src/Admin/SettingsPage.php:245
 msgid "Create a key"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:251
-msgid "Paste the key in Florank"
+#: src/Admin/SettingsPage.php:252
+msgid "Copy the code and paste it in Florank"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:254
-msgid "Copy site address"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:254 src/Admin/SettingsPage.php:329
-msgid "Copied"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:257
-msgid "Open Florank"
-msgstr ""
-
-#: src/Admin/SettingsPage.php:264 src/Admin/SettingsPage.php:431
+#: src/Admin/SettingsPage.php:259 src/Admin/SettingsPage.php:462
 msgid "Status"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:266 src/Admin/SettingsPage.php:301
+#: src/Admin/SettingsPage.php:261 src/Admin/SettingsPage.php:296
 msgid "Connected"
 msgstr ""
 
 #. translators: %s: date and time of the last request from Florank.
-#: src/Admin/SettingsPage.php:270
+#: src/Admin/SettingsPage.php:265
 #, php-format
 msgid "Last request: %s"
 msgstr ""
 
 #. translators: %s: date and time of the last request from Florank.
-#: src/Admin/SettingsPage.php:270 src/Admin/SettingsPage.php:464
+#: src/Admin/SettingsPage.php:265 src/Admin/SettingsPage.php:495
 msgid "Y-m-d H:i"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:274 src/Admin/SettingsPage.php:304
+#: src/Admin/SettingsPage.php:269 src/Admin/SettingsPage.php:299
 msgid "Waiting for the first request"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:276 src/Admin/SettingsPage.php:307
+#: src/Admin/SettingsPage.php:271 src/Admin/SettingsPage.php:302
 msgid "Not connected"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:320
+#: src/Admin/SettingsPage.php:315
 msgid "Create key"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:329
-msgid "Copy"
+#: src/Admin/SettingsPage.php:324
+msgid "Show the key separately"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:330
-msgid "Shown once"
+#: src/Admin/SettingsPage.php:327
+msgid "Copy key"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:339
+#: src/Admin/SettingsPage.php:327 src/Admin/SettingsPage.php:375
+msgid "Copied"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:337
 msgid "New key"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:340
+#: src/Admin/SettingsPage.php:338
 msgid "Revoke key"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:343
+#: src/Admin/SettingsPage.php:341
 msgid "Revoke the key? Florank will stop publishing to this site."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:345
+#: src/Admin/SettingsPage.php:343
 msgid "Yes, revoke"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:346 src/Admin/SettingsPage.php:409
+#: src/Admin/SettingsPage.php:344 src/Admin/SettingsPage.php:440
 msgid "Cancel"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:381 src/Admin/SettingsPage.php:400
+#: src/Admin/SettingsPage.php:362
+msgid "Connection code"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:375
+msgid "Copy"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:376
+msgid "Shown once"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:378
+msgid "Open Florank"
+msgstr ""
+
+#: src/Admin/SettingsPage.php:412 src/Admin/SettingsPage.php:431
 msgid "Publishing as"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:390
+#: src/Admin/SettingsPage.php:421
 msgid "Change"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:394
+#: src/Admin/SettingsPage.php:425
 msgid "User not found. Choose another one."
 msgstr ""
 
-#: src/Admin/SettingsPage.php:407
+#: src/Admin/SettingsPage.php:438
 msgid "Save"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:424
+#: src/Admin/SettingsPage.php:455
 msgid "Latest articles from Florank"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:426
+#: src/Admin/SettingsPage.php:457
 msgid "No articles yet"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:430
+#: src/Admin/SettingsPage.php:461
 msgid "Title"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:432
+#: src/Admin/SettingsPage.php:463
 msgid "Updated"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:433
+#: src/Admin/SettingsPage.php:464
 msgid "Link"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:451
+#: src/Admin/SettingsPage.php:482
 msgid "(no title)"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:467
+#: src/Admin/SettingsPage.php:498
 msgid "View"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:482
+#: src/Admin/SettingsPage.php:513
 msgid "Published"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:483
+#: src/Admin/SettingsPage.php:514
 msgid "Draft"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:484
+#: src/Admin/SettingsPage.php:515
 msgid "Scheduled"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:485
+#: src/Admin/SettingsPage.php:516
 msgid "Pending"
 msgstr ""
 
-#: src/Admin/SettingsPage.php:486
+#: src/Admin/SettingsPage.php:517
 msgid "Private"
 msgstr ""
 

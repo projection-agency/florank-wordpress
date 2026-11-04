@@ -8,6 +8,7 @@
 namespace Florank\Admin;
 
 use Florank\Auth\ApiKey;
+use Florank\Auth\ConnectionCode;
 use Florank\Auth\RunAsUser;
 use Florank\Posts\PostService;
 use WP_Post;
@@ -248,14 +249,8 @@ class SettingsPage {
 					<li class="florank-step<?php echo $connected ? ' is-done' : ''; ?>">
 						<span class="florank-step-num" aria-hidden="true">2</span>
 						<div class="florank-step-body">
-							<span class="florank-step-title"><?php esc_html_e( 'Paste the key in Florank', 'florank' ); ?></span>
-							<div class="florank-snippet">
-								<code class="florank-code" id="florank-site-url"><?php echo esc_html( untrailingslashit( home_url() ) ); ?></code>
-								<button type="button" class="florank-icon-btn" data-florank-copy="florank-site-url" aria-label="<?php esc_attr_e( 'Copy site address', 'florank' ); ?>" data-florank-copied="<?php esc_attr_e( 'Copied', 'florank' ); ?>"><?php self::copy_icon(); ?></button>
-							</div>
-							<div class="florank-actions">
-								<a class="florank-btn <?php echo ( $has_key && '' === $plain && ! $connected ) ? 'is-accent' : 'is-dark'; ?>" href="<?php echo esc_url( self::APP_URL ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open Florank', 'florank' ); ?></a>
-							</div>
+							<span class="florank-step-title"><?php esc_html_e( 'Copy the code and paste it in Florank', 'florank' ); ?></span>
+							<?php $this->render_code_step( $plain, $has_key, $connected ); ?>
 						</div>
 					</li>
 					<li class="florank-step<?php echo $connected ? ' is-done' : ''; ?>">
@@ -322,13 +317,16 @@ class SettingsPage {
 		}
 		if ( '' !== $plain ) {
 			?>
-			<div class="florank-snippet">
-				<code class="florank-code is-key" id="florank-api-key"><?php echo esc_html( $plain ); ?></code>
-			</div>
 			<div class="florank-actions">
-				<button type="button" class="florank-btn is-accent" data-florank-copy="florank-api-key" data-florank-copied="<?php esc_attr_e( 'Copied', 'florank' ); ?>"><?php esc_html_e( 'Copy', 'florank' ); ?></button>
-				<span class="florank-tag"><?php esc_html_e( 'Shown once', 'florank' ); ?></span>
+				<span class="florank-tag is-mono"><?php echo esc_html( $this->api_key->hint() ); ?></span>
 			</div>
+			<details class="florank-details">
+				<summary><?php esc_html_e( 'Show the key separately', 'florank' ); ?></summary>
+				<div class="florank-snippet">
+					<code class="florank-code" id="florank-api-key"><?php echo esc_html( $plain ); ?></code>
+					<button type="button" class="florank-icon-btn" data-florank-copy="florank-api-key" aria-label="<?php esc_attr_e( 'Copy key', 'florank' ); ?>" data-florank-copied="<?php esc_attr_e( 'Copied', 'florank' ); ?>"><?php self::copy_icon(); ?></button>
+				</div>
+			</details>
 			<?php
 			return;
 		}
@@ -345,6 +343,39 @@ class SettingsPage {
 				<?php $this->render_action_form( self::REVOKE_ACTION, __( 'Yes, revoke', 'florank' ), 'is-dark' ); ?>
 				<a class="florank-btn is-outline" href="<?php echo esc_url( self::page_url() ); ?>" data-florank-open="florank-key-actions" data-florank-hide="florank-revoke"><?php esc_html_e( 'Cancel', 'florank' ); ?></a>
 			</div>
+		</div>
+		<?php
+	}
+
+	/**
+	 * Step 2: the connection code (site address + key) right after the key is created,
+	 * a masked placeholder afterwards, and the link to Florank.
+	 *
+	 * @param string $plain     Key generated in the last minutes ('' if none).
+	 * @param bool   $has_key   Whether a key is active.
+	 * @param bool   $connected Whether Florank already called the site.
+	 */
+	private function render_code_step( $plain, $has_key, $connected ) {
+		$open_style = ( $has_key && '' === $plain && ! $connected ) ? 'is-accent' : 'is-dark';
+		if ( '' !== $plain ) {
+			?>
+			<span class="florank-label" id="florank-connection-code-label"><?php esc_html_e( 'Connection code', 'florank' ); ?></span>
+			<div class="florank-snippet">
+				<code class="florank-code is-key" id="florank-connection-code" aria-labelledby="florank-connection-code-label"><?php echo esc_html( ConnectionCode::build( ConnectionCode::site_address(), $plain ) ); ?></code>
+			</div>
+			<?php
+		} elseif ( $has_key ) {
+			?>
+			<span class="florank-tag is-mono"><?php echo esc_html( ConnectionCode::PREFIX . '…' ); ?></span>
+			<?php
+		}
+		?>
+		<div class="florank-actions">
+			<?php if ( '' !== $plain ) : ?>
+				<button type="button" class="florank-btn is-accent" data-florank-copy="florank-connection-code" data-florank-copied="<?php esc_attr_e( 'Copied', 'florank' ); ?>"><?php esc_html_e( 'Copy', 'florank' ); ?></button>
+				<span class="florank-tag"><?php esc_html_e( 'Shown once', 'florank' ); ?></span>
+			<?php endif; ?>
+			<a class="florank-btn <?php echo esc_attr( $open_style ); ?>" href="<?php echo esc_url( self::APP_URL ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Open Florank', 'florank' ); ?></a>
 		</div>
 		<?php
 	}

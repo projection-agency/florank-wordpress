@@ -32,11 +32,11 @@ A Florank account is required. See [florank.ai](https://florank.ai).
 == Installation ==
 
 1. In WordPress, go to Plugins → Add New → Upload Plugin and upload `florank.zip`. Activate the plugin.
-2. Open the **Florank** menu item and click **Create key**. Copy the key — it is shown only once.
-3. In Florank (https://app.florank.ai), open Content → Integrations → WordPress, enter your site URL and paste the key.
+2. Open the **Florank** menu item and click **Create key**. Copy the connection code — it is shown only once.
+3. In Florank (https://app.florank.ai), open Content → Integrations → WordPress and paste the code. Older Florank versions ask for the site URL and the key: use **Show the key separately**.
 4. The plugin page shows **Connected** after the first request from Florank.
 
-To rotate the key, click **New key** and paste the new key in Florank. The old key stops working immediately. **Revoke key** disconnects Florank.
+To rotate the key, click **New key** and paste the new code in Florank. The old key stops working immediately. **Revoke key** disconnects Florank.
 
 == Frequently Asked Questions ==
 
@@ -95,7 +95,7 @@ The settings page uses the fonts Geist (Vercel), Wix Madefor Text (Wix) and Anon
 * Security: images are downloaded only over HTTPS from Florank hosts (filter `florank_allowed_image_hosts`); other image URLs are left as they are.
 * Security: imported images are limited to JPEG, PNG, WebP, GIF and AVIF up to 10 MB (filter `florank_max_image_bytes`); the real file type is checked.
 * Updating an article reuses images imported before instead of adding copies to the Media Library.
-* New Florank page: create and copy the key, connection status, the user Florank publishes as, the latest 10 articles from Florank, revoke the key.
+* New Florank page: create a key and copy one connection code (site address + key) for Florank, connection status, the user Florank publishes as, the latest 10 articles from Florank, revoke the key.
 * Ukrainian translation.
 * Posts created by Florank now have the linked user as author (unless the Florank author email matches another user).
 * No changes to the REST API routes or the key: existing connections keep working after the update.

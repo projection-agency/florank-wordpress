@@ -17,6 +17,7 @@ src/                   PSR-4, namespace Florank\ (own autoloader in src/autoload
   Admin/SettingsPage   "Florank" admin page: generate / rotate the API key
   Rest/Controller      florank/v1 routes: /health, /posts CRUD
   Auth/ApiKey          key generation, hash storage, header parsing, verification
+  Auth/ConnectionCode  connection code flc1_… (site address + key) shown on the settings page
   Posts/PostService    create / update / list / delete posts
   Media/ImageImporter  images (bytes or URL) → Media Library
   Seo/SeoBridge        Yoast / Rank Math detection and meta

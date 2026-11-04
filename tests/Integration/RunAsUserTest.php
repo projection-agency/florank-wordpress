@@ -9,6 +9,7 @@ namespace Florank\Tests\Integration;
 
 use Florank\Admin\SettingsPage;
 use Florank\Auth\ApiKey;
+use Florank\Auth\ConnectionCode;
 use Florank\Auth\RunAsUser;
 use Florank\IndexNow\IndexNow;
 use Florank\Media\ImageImporter;
@@ -298,5 +299,34 @@ class RunAsUserTest extends WP_UnitTestCase {
 		$this->assertStringNotContainsString( 'id="florank-api-key"', $html, 'The plain key is hidden after the first request.' );
 		$this->assertLessThanOrEqual( 1, substr_count( $html, 'is-accent' ) );
 		$this->assertStringNotContainsString( 'onclick', $html );
+	}
+
+	public function test_settings_page_shows_the_connection_code_once() {
+		( new RunAsUser() )->set( $this->admin_id );
+		wp_set_current_user( $this->admin_id );
+		ob_start();
+		$this->settings_page()->render();
+		$html = ob_get_clean();
+
+		$this->assertSame( 1, preg_match( '/id="florank-connection-code"[^>]*>(flc1_[A-Za-z0-9_-]+)</', $html, $m ) );
+		$this->assertSame(
+			array(
+				'u' => untrailingslashit( home_url() ),
+				'k' => $this->key,
+			),
+			ConnectionCode::parse( $m[1] )
+		);
+		$this->assertStringContainsString( 'id="florank-api-key"', $html, 'The bare key stays available for older Florank versions.' );
+		$this->assertStringContainsString( '<details class="florank-details">', $html );
+		$this->assertStringNotContainsString( 'florank-site-url', $html );
+		$this->assertSame( 1, substr_count( $html, 'is-accent' ) );
+
+		delete_transient( ApiKey::TRANSIENT_NEW );
+		ob_start();
+		$this->settings_page()->render();
+		$html = ob_get_clean();
+		$this->assertStringNotContainsString( 'id="florank-connection-code"', $html );
+		$this->assertStringNotContainsString( $this->key, $html );
+		$this->assertStringContainsString( 'flc1_…', $html );
 	}
 }

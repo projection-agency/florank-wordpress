@@ -1,0 +1,22 @@
+# Composer
+/vendor/
+
+# Build output
+/build/
+/dist/
+*.zip
+
+# Tooling caches
+.phpunit.result.cache
+.phpcs-cache
+/.phpunit.cache/
+
+# wp-env
+.wp-env.override.json
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp

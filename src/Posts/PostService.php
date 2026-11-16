@@ -141,13 +141,15 @@ class PostService {
 	}
 
 	/**
-	 * Permanently deletes a post.
+	 * Permanently deletes a post created or updated through Florank.
+	 * Other posts on the site cannot be deleted through the API.
 	 *
 	 * @param int $id Post ID.
 	 * @return array<string, mixed>|WP_Error
 	 */
 	public function delete( $id ) {
-		if ( get_post( $id ) && ! current_user_can( 'delete_post', $id ) ) {
+		$post = get_post( $id );
+		if ( $post && ( 'post' !== $post->post_type || ! get_post_meta( $id, self::META_MANAGED, true ) || ! current_user_can( 'delete_post', $id ) ) ) {
 			return self::forbidden();
 		}
 		$deleted = wp_delete_post( $id, true );
@@ -206,7 +208,8 @@ class PostService {
 		$author_email = sanitize_email( $body['author_email'] ?? '' );
 		if ( '' !== $author_email ) {
 			$author = get_user_by( 'email', $author_email );
-			if ( $author && ( get_current_user_id() === (int) $author->ID || current_user_can( 'edit_others_posts' ) ) ) {
+			// Only an existing user who can write posts on this site may be set as the author.
+			if ( $author && user_can( $author, 'edit_posts' ) ) {
 				wp_update_post(
 					array(
 						'ID'          => $post_id,

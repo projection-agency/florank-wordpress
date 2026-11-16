@@ -10,6 +10,7 @@
 namespace Florank\Tests\Integration;
 
 use Florank\Auth\ApiKey;
+use Florank\Auth\RunAsUser;
 use WP_REST_Request;
 use WP_REST_Server;
 use WP_UnitTestCase;
@@ -27,8 +28,9 @@ class RestControllerTest extends WP_UnitTestCase {
 		$wp_rest_server = new WP_REST_Server();
 		do_action( 'rest_api_init' );
 
-		wp_set_current_user( 0 );
 		$this->key = ( new ApiKey() )->generate();
+		( new RunAsUser() )->use_service_user();
+		wp_set_current_user( 0 );
 	}
 
 	public function tear_down() {

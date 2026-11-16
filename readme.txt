@@ -4,7 +4,7 @@ Tags: seo, ai, content, schema, indexnow
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 8.0
-Stable tag: 2.1.2
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,7 +28,8 @@ What the plugin does:
 Safety:
 
 * Florank can only call the plugin with the API key you create on the plugin page. The key is stored as a password hash and can be revoked at any time.
-* Requests from Florank run as the WordPress user you choose on the plugin page (by default, the administrator who created the key), with that user's permissions.
+* Florank cannot administer your site. Its requests run as a dedicated "Florank" user with the Author role, which the plugin creates when you create the key. That user cannot log in, and administrators can never be chosen.
+* Through the plugin Florank can only create posts, edit and delete the posts it created, and upload their images. It cannot manage plugins, themes, users or settings, and cannot edit or delete other posts or pages.
 * Only JPEG, PNG, WebP, GIF and AVIF images up to 10 MB are imported. Images are downloaded only over HTTPS from Florank file storage.
 
 A Florank account is required. See [florank.ai](https://florank.ai).
@@ -65,7 +66,11 @@ No. With either plugin active, Florank fills its SEO title and description field
 
 = Which WordPress user publishes the articles? =
 
-The user shown under **Publishing as** on the Florank page — by default, the administrator who created the key. You can choose any user who can edit posts and upload files. If that user is deleted or loses these permissions, Florank gets a clear error until you choose another user.
+The user shown under **Publishing as** on the Florank page — by default, a dedicated user named "Florank" with the Author role, created by the plugin. It has no email and cannot log in. You can choose another user who can edit posts and upload files, but not an administrator. Whatever the user's role, Florank requests are limited to creating posts, editing and deleting posts created through Florank, and uploading images. When the Florank author email matches a WordPress user who can write posts, that user is shown as the post author.
+
+= Can Florank change my plugins, themes, users or settings? =
+
+No. The plugin has no remote endpoints for that, requests never run as an administrator, and during a Florank request every capability except post and media ones is switched off.
 
 = Can I allow images from another host? =
 
@@ -77,7 +82,7 @@ Click **New key** on the Florank page in WordPress and paste the new code in Flo
 
 = What happens when I delete the plugin? =
 
-The API key, the selected user, the IndexNow key and the data stored by Florank (JSON-LD, markers of Florank articles and images) are removed. Your posts and images stay.
+The API key, the selected user, the IndexNow key and the data stored by Florank (JSON-LD, markers of Florank articles and images) are removed. Your posts and images stay. The "Florank" user stays as the author of its posts; you can delete it under Users and assign its posts to another user.
 
 == Screenshots ==
 
@@ -110,6 +115,12 @@ To check the SEO tags of published articles, Florank may also open their public 
 The settings page uses the fonts Geist (Vercel), Wix Madefor Text (Wix) and Anonymous Pro (Mark Simonson), bundled in `assets/fonts` under the SIL Open Font License 1.1 (license files next to the fonts). No fonts are loaded from external servers.
 
 == Changelog ==
+
+= 2.2.0 =
+* Security: Florank requests no longer run as an administrator. They run as a dedicated "Florank" user with the Author role, created when the key is created. It cannot log in or use application passwords.
+* Security: administrators cannot be chosen under **Publishing as**. Keys linked to an administrator by 2.1.x (or to no user, by 1.x) move to the "Florank" user when an administrator opens wp-admin.
+* Security: during a Florank request only post and media capabilities are available, and Florank can edit or delete only posts created through it.
+* REST requests from Florank never create users or change the linked user.
 
 = 2.1.2 =
 * Plugin URI now points to the plugin's source repository, separate from the author URI.
@@ -152,6 +163,9 @@ The settings page uses the fonts Geist (Vercel), Wix Madefor Text (Wix) and Anon
 * API key, posts CRUD, Yoast / Rank Math meta, featured image sideload.
 
 == Upgrade Notice ==
+
+= 2.2.0 =
+Florank requests now run as a dedicated "Florank" Author user instead of an administrator. Open the Florank page in wp-admin once after the update.
 
 = 2.1.2 =
 Plugin header update only. No changes to how the plugin works.

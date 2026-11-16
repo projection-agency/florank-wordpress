@@ -133,7 +133,9 @@ class Controller {
 	/**
 	 * Permission callback for every route: valid Florank API key in
 	 * "Authorization: Bearer" or "X-Florank-Key", then the request runs as
-	 * the user linked to the key (403 if that user is gone or lacks rights).
+	 * the non-administrative user linked to the key (by default the dedicated
+	 * "Florank" Author user), limited to post and media capabilities.
+	 * 403 if that user is gone, lacks rights or is an administrator.
 	 *
 	 * @param WP_REST_Request $request Request.
 	 * @return true|WP_Error
@@ -143,11 +145,11 @@ class Controller {
 		if ( ! $this->api_key->verify( $key ) ) {
 			return new WP_Error( 'florank_unauthorized', __( 'Invalid Florank API key', 'florank' ), array( 'status' => 401 ) );
 		}
-		$this->run_as->migrate_legacy( true );
 		$user = $this->run_as->resolve();
 		if ( is_wp_error( $user ) ) {
 			return $user;
 		}
+		RunAsUser::restrict_capabilities( $user->ID );
 		wp_set_current_user( $user->ID );
 		if ( 0 === $this->run_as->last_request() ) {
 			// The key reached Florank: stop showing it on the settings page.

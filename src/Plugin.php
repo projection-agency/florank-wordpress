@@ -72,11 +72,12 @@ final class Plugin {
 	}
 
 	/**
-	 * Hook: admin_init. Keys created by v1.x are linked to an administrator
-	 * once, right after the update (or on the first request from Florank).
+	 * Hook: admin_init. Keys with no user (v1.x) or linked to an administrator
+	 * (v2.1.x) are moved to the dedicated Florank user when an administrator
+	 * opens wp-admin. Never runs on REST requests from Florank.
 	 */
 	public function migrate_legacy_key() {
-		if ( $this->run_as && $this->api_key ) {
+		if ( $this->run_as && $this->api_key && current_user_can( SettingsPage::CAPABILITY ) ) {
 			$this->run_as->migrate_legacy( $this->api_key->exists() );
 		}
 	}
@@ -111,6 +112,8 @@ final class Plugin {
 		$this->api_key = $api_key;
 		$this->run_as  = $run_as;
 		add_action( 'admin_init', array( $this, 'migrate_legacy_key' ) );
+		add_filter( 'authenticate', array( RunAsUser::class, 'block_service_login' ), 100 );
+		add_filter( 'wp_is_application_passwords_available_for_user', array( RunAsUser::class, 'no_app_passwords_for_service_user' ), 10, 2 );
 		add_action( 'rest_api_init', array( $rest, 'register_routes' ) );
 		add_action( 'wp_head', array( $json_ld, 'print_head' ) );
 		add_action( 'init', array( $index_now, 'maybe_serve_key' ), 0 );

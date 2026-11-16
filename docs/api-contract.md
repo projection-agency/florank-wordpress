@@ -75,30 +75,38 @@ Why JSON + base64url and not, say, `key@host`: the address can contain a port, a
 characters, and JSON leaves room for new fields without a new parser; base64url keeps the code a single
 token that survives copy-paste, chat apps and URL query strings.
 
-### Run-as user (2.1.0+)
+### Run-as user (2.2.0+)
 
 After the key is accepted, the request runs as the WordPress user stored in option `florank_run_as_user`
-(`wp_set_current_user`), and WordPress capability checks apply. 1.x substituted the first administrator instead.
+(`wp_set_current_user`). That user is never an administrator.
 
-- Set when a key is created on the plugin page (the administrator who clicked "Create key"); the site owner can change it
-  to any user with `edit_posts` and `upload_files`.
-- Keys created by 1.x have no stored user: on the first authorized request (or the first admin page load) after the update
-  the first administrator (lowest ID) is stored **once**. Later changes are never overwritten.
+- When a key is created on the plugin page the plugin creates (once) a dedicated user: login `florank`
+  (or `florank-publisher`, …), display name "Florank", role **Author**, random password, no email, user meta
+  `_florank_service_user = 1`. It cannot log in (`authenticate` filter) or use application passwords.
+- The site owner can pick another user with `edit_posts` and `upload_files` and **none** of the administrative
+  capabilities in `RunAsUser::ADMIN_CAPS` (plugins, themes, users, options, core, files, import/export).
+- REST requests never create users or change `florank_run_as_user`. Keys with no user (1.x), linked to an
+  administrator (2.1.x) or to a deleted user are moved to the dedicated user on `admin_init`, when an administrator
+  opens wp-admin. Until then requests get 403.
+- During the request the user has only `RunAsUser::ALLOWED_CAPS` (`read`, `edit_posts`, `edit_published_posts`,
+  `publish_posts`, `delete_posts`, `delete_published_posts`, `upload_files`), whatever the role. Posts with
+  `_florank_managed` count as the user's own for `edit_post` / `delete_post`, so Florank keeps editing its articles
+  after `author_email` changes the author. Other posts and pages are out of reach.
 - Successful authorization stores the time in option `florank_last_request` (shown as "Connected").
 
-New errors (all routes, after a valid key):
+Errors (all routes, after a valid key):
 
 ```
 HTTP 403 { "code": "florank_user_missing",   "message": "The WordPress user Florank publishes as does not exist. …" }
-HTTP 403 { "code": "florank_user_forbidden", "message": "The WordPress user Florank publishes as (login) cannot edit posts or upload files. …" }
+HTTP 403 { "code": "florank_user_forbidden", "message": "The WordPress user Florank publishes as (login) cannot be used: … must not be an administrator. …" }
 ```
 
-Per operation (only possible when the site owner picked a non-administrator):
+Per operation:
 
 - `POST /posts` with `status` `publish`/`future` needs `publish_posts`; `POST /posts/{id}` on an existing post needs
-  `edit_post`; `DELETE /posts/{id}` on an existing post needs `delete_post` →
-  otherwise `HTTP 403 { "code": "florank_forbidden", … }`. Unknown IDs keep the 1.4 responses (500 / 400).
-- `author_email` is applied only if it is the run-as user or the run-as user has `edit_others_posts`; otherwise ignored.
+  `edit_post` (Florank posts or the user's own); `DELETE /posts/{id}` works only on posts created through Florank
+  (`_florank_managed`) → otherwise `HTTP 403 { "code": "florank_forbidden", … }`. Unknown IDs keep the 1.4 responses (500 / 400).
+- `author_email` is applied when it matches an existing user who has `edit_posts`; otherwise ignored.
 
 Messages are translated to the site language; the backend shows them as is (`HTTP 403: {body}`).
 
@@ -111,7 +119,8 @@ Messages are translated to the site language; the backend shows them as is (`HTT
 | `florank_new_api_key` | transient, 10 min | plain key right after generation (shown once, also inside the connection code) |
 | `florank_indexnow_key` | option, autoload no | IndexNow key |
 | `_florank_schema_json_ld` | post meta | JSON-encoded schema from `schema_json_ld` |
-| `florank_run_as_user` | option (2.1.0+) | ID of the user requests run as; `0` if no administrator was found during migration |
+| `florank_run_as_user` | option (2.1.0+) | ID of the user requests run as (2.2.0+: never an administrator) |
+| `_florank_service_user` | user meta (2.2.0+) | `1` on the dedicated "Florank" Author user |
 | `florank_last_request` | option (2.1.0+) | Unix time of the last authorized request; cleared on new / revoked key |
 | `_florank_managed` | post meta (2.1.0+) | `1` on posts created or updated through the API (plugin page list) |
 | `_florank_source_url`, `_florank_source_hash` | attachment meta (2.1.0+) | source URL and SHA-256 of imported images (reuse on update) |

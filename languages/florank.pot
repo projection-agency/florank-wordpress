@@ -20,6 +20,10 @@ msgid "Florank"
 msgstr ""
 
 #. Plugin URI of the plugin
+#: florank.php
+msgid "https://github.com/projection-agency/florank-wordpress"
+msgstr ""
+
 #. Author URI of the plugin
 #: florank.php
 msgid "https://florank.ai"

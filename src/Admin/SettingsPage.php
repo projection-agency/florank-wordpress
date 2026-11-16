@@ -128,13 +128,17 @@ class SettingsPage {
 	}
 
 	/**
-	 * Hook: admin_post_florank_generate_key. New key; Florank will run as the
-	 * administrator who created it until changed on this page.
+	 * Hook: admin_post_florank_generate_key. New key; Florank runs as the
+	 * dedicated "Florank" Author user (created now if needed) unless the site
+	 * owner already chose another non-administrator on this page.
 	 */
 	public function handle_generate_key() {
 		$this->guard( self::GENERATE_ACTION );
 		$this->api_key->generate();
-		$this->run_as->set( get_current_user_id() );
+		$current = $this->run_as->get_id();
+		if ( ! $current || ! RunAsUser::is_eligible( get_userdata( $current ) ) ) {
+			$this->run_as->use_service_user();
+		}
 		$this->run_as->reset_last_request();
 		$this->back( array( 'generated' => '1' ) );
 	}
@@ -220,7 +224,7 @@ class SettingsPage {
 		$messages  = array(
 			'revoked'      => __( 'Key revoked', 'florank' ),
 			'user_saved'   => __( 'Saved', 'florank' ),
-			'user_invalid' => __( 'This user cannot edit posts or upload files.', 'florank' ),
+			'user_invalid' => __( 'Choose a user who can edit posts and upload files and is not an administrator.', 'florank' ),
 		);
 		?>
 		<div class="wrap florank-admin">
@@ -420,7 +424,7 @@ class SettingsPage {
 				<?php if ( $valid ) : ?>
 					<a class="florank-link" href="<?php echo esc_url( self::page_url( array( 'florank_edit' => 'user' ) ) ); ?>" data-florank-open="florank-user-form" data-florank-hide="florank-user-view"><?php esc_html_e( 'Change', 'florank' ); ?></a>
 				<?php elseif ( $user instanceof WP_User ) : ?>
-					<span class="florank-state is-error"><?php esc_html_e( 'This user cannot edit posts or upload files.', 'florank' ); ?></span>
+					<span class="florank-state is-error"><?php esc_html_e( 'This user cannot be used: it must be able to edit posts and upload files and must not be an administrator.', 'florank' ); ?></span>
 				<?php else : ?>
 					<span class="florank-state is-error"><?php esc_html_e( 'User not found. Choose another one.', 'florank' ); ?></span>
 				<?php endif; ?>

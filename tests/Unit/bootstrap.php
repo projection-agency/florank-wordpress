@@ -16,8 +16,10 @@ $GLOBALS['florank_test_options']    = array();
 $GLOBALS['florank_test_transients'] = array();
 $GLOBALS['florank_test_users']      = array();
 $GLOBALS['florank_test_filters']    = array();
+$GLOBALS['florank_test_user_meta']  = array();
 
 function florank_test_reset() {
+	$GLOBALS['florank_test_user_meta']  = array();
 	$GLOBALS['florank_test_options']    = array();
 	$GLOBALS['florank_test_transients'] = array();
 	$GLOBALS['florank_test_users']      = array();
@@ -43,8 +45,51 @@ function user_can( $user, $cap ) {
 	return $user instanceof WP_User && in_array( $cap, $user->caps, true );
 }
 
+function username_exists( $login ) {
+	foreach ( $GLOBALS['florank_test_users'] as $user ) {
+		if ( $user->user_login === $login ) {
+			return $user->ID;
+		}
+	}
+	return false;
+}
+
+function wp_generate_password( $length = 12, $special_chars = true, $extra_special_chars = false ) {
+	return substr( str_repeat( 'abcdef0123', 10 ), 0, $length );
+}
+
+$GLOBALS['florank_test_role_caps'] = array(
+	'author' => array( 'read', 'edit_posts', 'edit_published_posts', 'publish_posts', 'delete_posts', 'delete_published_posts', 'upload_files' ),
+);
+
+function wp_insert_user( $data ) {
+	$id                                       = empty( $GLOBALS['florank_test_users'] ) ? 1 : max( array_keys( $GLOBALS['florank_test_users'] ) ) + 1;
+	$GLOBALS['florank_test_inserted_users'][] = $data;
+	florank_test_add_user( $id, $data['user_login'], array( $data['role'] ), $GLOBALS['florank_test_role_caps'][ $data['role'] ] ?? array() );
+	return $id;
+}
+
+function update_user_meta( $user_id, $key, $value ) {
+	$GLOBALS['florank_test_user_meta'][ (int) $user_id ][ $key ] = $value;
+	return true;
+}
+
+function get_user_meta( $user_id, $key, $single = false ) {
+	return $GLOBALS['florank_test_user_meta'][ (int) $user_id ][ $key ] ?? '';
+}
+
 function get_users( $args = array() ) {
 	$users = array_values( $GLOBALS['florank_test_users'] );
+	if ( isset( $args['meta_key'] ) ) {
+		$users = array_values(
+			array_filter(
+				$users,
+				static function ( $u ) use ( $args ) {
+					return '' !== get_user_meta( $u->ID, $args['meta_key'], true );
+				}
+			)
+		);
+	}
 	if ( isset( $args['role'] ) ) {
 		$users = array_values(
 			array_filter(

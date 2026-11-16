@@ -36,9 +36,8 @@ class ImageImportTest extends WP_UnitTestCase {
 		$wp_rest_server = new WP_REST_Server();
 		do_action( 'rest_api_init' );
 
-		$admin     = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->key = ( new ApiKey() )->generate();
-		( new RunAsUser() )->set( $admin );
+		( new RunAsUser() )->use_service_user();
 		wp_set_current_user( 0 );
 
 		$this->fetched = array();

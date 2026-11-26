@@ -1,0 +1,31 @@
+name: Update readme and assets on WordPress.org
+
+# Pushes only readme.txt and .wordpress-org assets to the WordPress.org SVN
+# (trunk and the current stable tag). No new plugin version is released.
+# Use it for "Tested up to" bumps. Run manually: Actions → this workflow → Run.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wporg-deploy
+  cancel-in-progress: false
+
+jobs:
+  readme:
+    name: Update readme/assets in the WordPress.org SVN
+    if: ${{ vars.WPORG_DEPLOY == 'true' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: 10up/action-wordpress-plugin-asset-update@2.2.0
+        env:
+          SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
+          SLUG: florank
+          ASSETS_DIR: .wordpress-org
+          README_NAME: readme.txt
+          IGNORE_OTHER_FILES: true

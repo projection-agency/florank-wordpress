@@ -77,6 +77,28 @@ jobs:
       - if: ${{ always() }}
         run: npx --yes @wordpress/env@10 stop || true
 
+  integration-wp-next:
+    name: Integration tests (WordPress 7.2 RC)
+    runs-on: ubuntu-latest
+    env:
+      WP_ENV_CORE: https://downloads.wordpress.org/release/wordpress-7.2-RC3.zip
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          coverage: none
+          tools: composer:v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: composer install --no-interaction --no-progress
+      - run: npx --yes @wordpress/env@10 start
+      - run: npx --yes @wordpress/env@10 run tests-cli wp core version
+      - run: npx --yes @wordpress/env@10 run tests-cli --env-cwd="wp-content/plugins/$(basename "$PWD")" vendor/bin/phpunit -c phpunit-integration.xml.dist
+      - if: ${{ always() }}
+        run: npx --yes @wordpress/env@10 stop || true
+
   i18n:
     name: Translation template is up to date
     runs-on: ubuntu-latest

@@ -2,7 +2,7 @@
 Contributors: florank
 Tags: seo, ai, content, schema, indexnow
 Requires at least: 6.0
-Tested up to: 7.1
+Tested up to: 7.2
 Requires PHP: 8.0
 Stable tag: 2.2.0
 License: GPLv2 or later
